@@ -1,3 +1,3 @@
 Execution Command:
 
-python <programfile> <csvfile> <fooditems .... >
+python <\programfile> <\csvfile> <\fooditems .... >
