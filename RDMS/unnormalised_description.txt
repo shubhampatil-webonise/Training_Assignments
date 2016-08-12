@@ -1,0 +1,33 @@
+The image unnormalisedSchema.png contains unnormalised model data.
+
+Example :
+
+Users Table:
+
+(duplication of data)
+
+1, A, A@gmail.com, ***, Aaddress, Atype
+2, B, B@gmail.com, ***, Aaddress, Atype
+3, B, C@gmail.com, ***, Baddress, Atype
+4, C, D@gmail.com, ***, Caddress, Btype
+
+
+Orders:
+
+(duplication of data)
+
+1, order#1, product#1, pay1, date1
+1, order#1, product#2, pay1, date1
+1, order#1, product#3, pay1, date1
+2, order#2, product#1, pay2, date2
+2, order#3, product#1, pay1, date1
+
+
+Products:
+
+(duplication of data)
+
+1, Camera, White, 1000
+1, Camera, Black, 2000
+2, Microwave, White, 1000,
+2, Microwave, Black, 3000
