@@ -1,0 +1,105 @@
+1) Collection users:
+
+Design of single entry for user:
+
+{
+	_id : <user_id>,
+
+	credentials : {
+		email : <email_id>,
+		password : <password>
+	},
+
+	profile_details : {
+		name : {
+			first_name : <first_name>,
+			last_name : <last_name>
+		},
+
+		date_of_birth : <date>,
+
+		profile_picture : <url>,
+
+		contact : <contact>,
+
+		place : <city-state>,
+
+		<other_profile_details>
+	},
+
+	roles : {
+		position : <user/admin/editor/superadmin>,
+
+		can_update : <boolean>,
+
+		can_delete : <boolean>
+	},
+
+	activity : {
+		post : [
+			{
+				post_id : <post_id>,
+
+				timestamp : <date_time>
+			},
+
+			<other_entries_for_post_activity>
+		],
+
+		liked : [
+			{
+				post_id : <post_id>,
+
+				timestamp : <date_time>
+			},
+
+			<other_entries_for_like_activity>
+		]
+	}
+}
+
+
+
+2) Collection posts:
+
+Design of single entry for post:
+
+{
+	_id : <post_id>,
+
+	user_id : <user_id>
+
+	post : {
+		heading : <post_heading>,
+
+		body : <post_body>,
+
+		tags : [<tag1>, <tag2>, ....],
+
+		attachments : [
+			{
+				type : image,
+				url : <image_url>
+			},
+
+			{
+				type : video,
+				url : <video_url>
+			}
+		],
+
+		comments : [
+			{
+				comment_id : <comment_id>,
+
+				comment_body : <comment_body>,
+
+				replies : [<reply1>, <reply2>, ....],
+
+				timestamp : <date_time>
+			},
+
+			<other_comment_entries>
+		]
+	}
+}
