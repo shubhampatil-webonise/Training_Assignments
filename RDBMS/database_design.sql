@@ -1,10 +1,11 @@
-﻿/*drop table order_compositions;
+﻿drop table order_compositions;
 drop table orders;
 drop table discount_rates;
 drop table variants;
 drop table products;
 drop table addresses;
-drop table users;*/
+drop table users;
+drop view details_of_product_sold;
 
 /* Queries to create tables for e-commerce database schema */
 
@@ -17,7 +18,7 @@ create table if not exists users(
 );
 
 create table if not exists addresses(
-	user_id integer not null references users(id),
+	user_id integer not null references users(id) on delete cascade,
 	city text,
 	state text,
 	pincode integer check(length(pincode::text) = 6)
@@ -31,12 +32,12 @@ create table if not exists discount_rates(
 
 create table if not exists orders(
 	order_id text primary key not null, /*check(length(order_id) >= 8 and length(order_id) <= 10),*/
-	user_id integer not null references users(id),
+	user_id integer not null references users(id) on delete cascade,
 	payment_method text references discount_rates(payment_method),
 	payment_status text not null default 'incomplete' check(payment_status in ('complete', 'incomplete')),
 	order_date date not null default now(),
 	order_cost money not null default 0,
-	shipping_date date
+	shipping_date date default now() + interval '1 week'
 );
 
 create table if not exists products(
@@ -55,7 +56,7 @@ create table if not exists variants(
 
 
 create table if not exists order_compositions(
-	order_id text not null references orders(order_id),
+	order_id text not null references orders(order_id) on delete cascade,
 	variant_id text not null references variants(variant_id)
 );
 
@@ -94,9 +95,19 @@ returns trigger as $$
 declare
 	new_order_cost integer:= 0;
 begin
-	/*update*/
+	new_order_cost := (select sum(price) from variants
+				inner join order_compositions on 
+				variants.variant_id = order_compositions.variant_id
+				and 
+				order_compostions.order_id = old.order_id);
+
+	update orders set
+	order_cost = new_order_cost
+	where order_id = old.order_id;
+		
 end; $$
 language plpgsql;
+
 
 create trigger update_order_cost_trigger
 	after update or delete
@@ -104,20 +115,7 @@ create trigger update_order_cost_trigger
 	for each row
 	execute procedure update_order_cost();
 
-create or replace function clear_order_from_compositions()
-returns trigger as $$
-begin
-	delete from order_compositions
-	where order_id = old.order_id;
-end; $$
-language plpgsql;
 
-
-create trigger clear_order_from_compositions_trigger
-	after delete
-	on orders
-	for each row
-	execute procedure clear_order_from_compositions();
 
 
 create or replace function cancel_order(
@@ -221,6 +219,48 @@ begin
 end; $$
 language plpgsql;
 
-select place_order(1, '{1, 2, 3}');
+/*select place_order(1, '{1, 2, 3}');
 select do_payment(1, '1', 'debit card');
+*/
 
+/* db view */
+
+create view details_of_product_sold as
+select orders.order_id, orders.order_cost, orders.order_date,
+discount_rates.discount, orders.payment_method, orders.payment_status 
+from orders inner join discount_rates 
+on orders.payment_method = discount_rates.payment_method;
+
+/*end db view */
+
+
+/* monthly report */
+
+create of replace function generate_monthly_report()
+returns void as $$
+begin
+	create table monthly_report as(
+	select 
+		orders.order_id, orders.order_date,
+		products.product_name,
+		variants.price,
+		orders.order_cost,
+		users.name, users.email
+		from users
+		inner join orders 
+			on users.id = orders.user_id
+		inner join order_compositions 
+			on orders.order_id = order_compositions.order_id
+		inner join variants 
+			on order_compositions.variant_id = variants.variant_id 
+		inner join products 
+			on variants.product_id = products.product_id
+	where
+		orders.order_date >= now() - interval '1 month'
+	order by
+		orders.order_date;	
+	);
+end; $$
+language plpgsql;
+
+/* end monthly report */
