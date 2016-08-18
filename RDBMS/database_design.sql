@@ -1,13 +1,6 @@
-﻿drop table order_compositions;
-drop table orders;
-drop table discount_rates;
-drop table variants;
-drop table products;
-drop table addresses;
-drop table users;
-drop view details_of_product_sold;
+﻿
 
-/* Queries to create tables for e-commerce database schema */
+/* Start : Queries to create tables for e-commerce database schema */
 
 create table if not exists users(
 	id integer primary key not null,
@@ -31,7 +24,7 @@ create table if not exists discount_rates(
 );
 
 create table if not exists orders(
-	order_id text primary key not null, /*check(length(order_id) >= 8 and length(order_id) <= 10),*/
+	order_id text primary key not null check(length(order_id) >= 8 and length(order_id) <= 10),
 	user_id integer not null references users(id) on delete cascade,
 	payment_method text references discount_rates(payment_method),
 	payment_status text not null default 'incomplete' check(payment_status in ('complete', 'incomplete')),
@@ -60,7 +53,15 @@ create table if not exists order_compositions(
 	variant_id text not null references variants(variant_id)
 );
 
+/* End : Queries to create tables for e-commerce database schema */
 
+
+
+
+
+
+
+/* Start : Queries to insert data into tables*/
 
 insert into users values(1, 'shubh@gmail.com', '12345678', 'Shubham Patil', 'buyer');
 insert into users values(2, 'abc@gmail.com', '12345678', 'Akash Kumar', 'buyer');
@@ -90,64 +91,61 @@ insert into discount_rates values('online banking', 0);
 insert into discount_rates values('discount coupon', 10);
 
 
-create or replace function update_order_cost()
-returns trigger as $$
-declare
-	new_order_cost integer:= 0;
-begin
-	new_order_cost := (select sum(price) from variants
-				inner join order_compositions on 
-				variants.variant_id = order_compositions.variant_id
-				and 
-				order_compostions.order_id = old.order_id);
-
-	update orders set
-	order_cost = new_order_cost
-	where order_id = old.order_id;
-		
-end; $$
-language plpgsql;
-
-
-create trigger update_order_cost_trigger
-	after update or delete
-	on order_compositions
-	for each row
-	execute procedure update_order_cost();
+/* End : Queries to insert data into tables*/
 
 
 
 
-create or replace function cancel_order(
+
+
+/* Start : Stored procedure to place an order */
+
+create or replace function place_order(
 	input_user_id integer,
-	input_order_id integer)
+	input_variants text[])
 returns void as $$
 declare
-	check_order_validity integer := 0;
-	current_payment_status text;
-begin
+	order_id text;
+	cost_of_variant money;
+	type_of_user text;
+	order_cost money := 0;
+	counter integer := 1;
+	
+begin	
+	type_of_user := (select type from users where id = input_user_id);
 
-	check_order_validity := (select count(*) from orders where order_id = input_order_id and user_id = input_user_id);
-
-	if check_order_validity = 0 then
-		raise notice 'Error ! You have not placed this order.';
+	if type_of_user = 'invetory manager' then
+		raise notice 'Error : inventory manager cant buy product !';
 		return;
 	end if;
 
-	current_payment_status := (select payment_status from orders where order_id = input_order_id);
-
-	if current_payment_status = 'incomplete' then
-		delete from orders where order_id = input_order_id;
-		raise notice 'Thanks. Your order has been cancelled.';
-	else
-		/*call some refund procedure here*/
-		raise notice 'Thanks. Your order has been cancelled. Refund will be added to your account';
-	end if;
+	order_id := (select count(*) from orders)::text;
+	order_id := lpad((order_id::integer + 1)::text, 8, '0');
 	
-end;$$
+	while counter <= array_length(input_variants, 1) loop
+		cost_of_variant := (select price from variants where variant_id = input_variants[counter]);
+		order_cost := order_cost + cost_of_variant;
+		counter := counter + 1;
+	end loop;
+
+	insert into orders values(order_id, input_user_id, null, 'incomplete', now(), order_cost, null);
+
+	counter := 1;
+
+	while counter <= array_length(input_variants, 1) loop
+		insert into order_compositions values(order_id, input_variants[counter]);
+		counter := counter + 1;
+	end loop;
+end; $$
 language plpgsql;
 
+/* End : Stored procedure to place an order */
 
+
+
+
+
+/*Start : Stored procedure to do payment of orders*/
 
 create or replace function do_payment(
 	input_user_id integer,
@@ -179,64 +177,70 @@ begin
 end;$$
 language plpgsql;
 
+/*End : Stored procedure to do payment of orders*/
 
-create or replace function place_order(
+
+
+
+
+
+/*Start : Stored procedure to cancel an order*/
+
+create or replace function cancel_order(
 	input_user_id integer,
-	input_variants text[])
+	input_order_id integer)
 returns void as $$
 declare
-	order_id text;
-	cost_of_variant money;
-	type_of_user text;
-	order_cost money := 0;
-	counter integer := 1;
-	
-begin	
-	type_of_user := (select type from users where id = input_user_id);
+	check_order_validity integer := 0;
+	current_payment_status text;
+begin
 
-	if type_of_user = 'invetory manager' then
-		raise notice 'Error : inventory manager cant buy product !';
+	check_order_validity := (select count(*) from orders where order_id = input_order_id and user_id = input_user_id);
+
+	if check_order_validity = 0 then
+		raise notice 'Error ! You have not placed this order.';
 		return;
 	end if;
 
-	order_id := (select count(*) from orders);
-	order_id := (order_id::integer + 1)::text;
+	current_payment_status := (select payment_status from orders where order_id = input_order_id);
+
+	if current_payment_status = 'incomplete' then
+		delete from orders where order_id = input_order_id;
+		raise notice 'Thanks. Your order has been cancelled.';
+	else
+		/*call some refund procedure here*/
+		raise notice 'Thanks. Your order has been cancelled. Refund will be added to your account';
+	end if;
 	
-	while counter <= array_length(input_variants, 1) loop
-		cost_of_variant := (select price from variants where variant_id = input_variants[counter]);
-		order_cost := order_cost + cost_of_variant;
-		counter := counter + 1;
-	end loop;
-
-	insert into orders values(order_id, input_user_id, null, 'incomplete', now(), order_cost, null);
-
-	counter := 1;
-
-	while counter <= array_length(input_variants, 1) loop
-		insert into order_compositions values(order_id, input_variants[counter]);
-		counter := counter + 1;
-	end loop;
-end; $$
+end;$$
 language plpgsql;
 
-/*select place_order(1, '{1, 2, 3}');
-select do_payment(1, '1', 'debit card');
-*/
+/*End : Stored procedure to cancel an order*/
 
-/* db view */
 
-create view details_of_product_sold as
+
+
+
+
+/* Start : Query to generate view for details of product sold */
+
+create view details_of_products_sold as
 select orders.order_id, orders.order_cost, orders.order_date,
 discount_rates.discount, orders.payment_method, orders.payment_status 
 from orders inner join discount_rates 
 on orders.payment_method = discount_rates.payment_method;
 
-/*end db view */
+/* End : Query to generate view for details of product sold */
 
 
-/* monthly report */
 
-create of replace function generate_monthly_report()
+
+
+
+
+/* Start : Stored procedure to generate monthly report */
+
+create or replace function generate_monthly_report()
 returns void as $$
 begin
 	create table monthly_report as(
@@ -246,21 +250,75 @@ begin
 		variants.price,
 		orders.order_cost,
 		users.name, users.email
-		from users
-		inner join orders 
-			on users.id = orders.user_id
-		inner join order_compositions 
-			on orders.order_id = order_compositions.order_id
-		inner join variants 
-			on order_compositions.variant_id = variants.variant_id 
-		inner join products 
-			on variants.product_id = products.product_id
+
+	from users
+
+	inner join orders 
+		on users.id = orders.user_id
+	inner join order_compositions 
+		on orders.order_id = order_compositions.order_id
+	inner join variants 
+		on order_compositions.variant_id = variants.variant_id 
+	inner join products 
+		on variants.product_id = products.product_id
 	where
 		orders.order_date >= now() - interval '1 month'
 	order by
-		orders.order_date;	
+		orders.order_date	
 	);
 end; $$
 language plpgsql;
 
-/* end monthly report */
+
+/* End : Stored procedure to generate monthly report */
+
+
+
+
+
+
+/* Start : Stored procedure to display view for details of products sold*/
+
+create or replace function show_details_of_product_sold()
+returns void as $$
+begin 
+	select * from details_of_products_sold;
+end;$$
+language plpgsql;
+
+/* End : Stored procedure to display view for details of products sold*/
+
+
+
+
+
+
+
+/* Start : Trigger to update order_cost on update in order_compositions */
+
+create or replace function update_order_cost()
+returns trigger as $$
+declare
+	new_order_cost integer:= 0;
+begin
+	new_order_cost := (select sum(price) from variants
+				inner join order_compositions on 
+				variants.variant_id = order_compositions.variant_id
+				and 
+				order_compostions.order_id = old.order_id);
+
+	update orders set
+	order_cost = new_order_cost
+	where order_id = old.order_id;
+		
+end; $$
+language plpgsql;
+
+
+create trigger update_order_cost_trigger
+	after update or delete
+	on order_compositions
+	for each row
+	execute procedure update_order_cost();
+
+/* End : Trigger to update order_cost on update in order_compositions */
