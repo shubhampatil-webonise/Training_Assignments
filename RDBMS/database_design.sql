@@ -3,7 +3,7 @@
 /* Start : Queries to create tables for e-commerce database schema */
 
 create table if not exists users(
-	id integer primary key not null,
+	id serial primary key,
 	email text not null unique,
 	password text not null check(length(password) >= 8),
 	name text not null check(name not like '%[0-9]%'),
@@ -11,7 +11,7 @@ create table if not exists users(
 );
 
 create table if not exists addresses(
-	user_id integer not null references users(id) on delete cascade,
+	user_id integer not null references users(id) on delete cascade,	/*can't be serial*/
 	city text,
 	state text,
 	pincode integer check(length(pincode::text) = 6)
@@ -19,14 +19,16 @@ create table if not exists addresses(
 
 
 create table if not exists discount_rates(
-	payment_method text primary key not null,
+	id serial primary key,
+	payment_method text unique not null,
 	discount integer default 0
 );
 
+/*update from here*/
 create table if not exists orders(
-	order_id text primary key not null check(length(order_id) >= 8 and length(order_id) <= 10),
+	order_id varchar(10) not null check(length(order_id) >= 8),
 	user_id integer not null references users(id) on delete cascade,
-	payment_method text references discount_rates(payment_method),
+	payment_method_id integer references discount_rates(id),
 	payment_status text not null default 'incomplete' check(payment_status in ('complete', 'incomplete')),
 	order_date date not null default now(),
 	order_cost money not null default 0,
@@ -34,14 +36,15 @@ create table if not exists orders(
 );
 
 create table if not exists products(
-	product_id text primary key not null,
-	product_name text not null
+	id serial primary key
+	model_name text not null,
+	brand_name text not null
 );
 
 
 create table if not exists variants(
-	variant_id text not null primary key,
-	product_id text not null references products(product_id),
+	variant_id serial primary key,
+	product_id integer references products(id),
 	color text not null,
 	price money not null
 );
