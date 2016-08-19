@@ -1,6 +1,4 @@
-﻿
-
-/* Start : Queries to create tables for e-commerce database schema */
+﻿/* Start : Queries to create tables for e-commerce database schema */
 
 create table if not exists users(
 	id serial primary key,
@@ -24,9 +22,10 @@ create table if not exists discount_rates(
 	discount integer default 0
 );
 
-/*update from here*/
+
 create table if not exists orders(
-	order_id varchar(10) not null check(length(order_id) >= 8),
+	id serial primary key,
+	order_id text not null check(length(order_id) >= 8 and length(order_id) <= 10),
 	user_id integer not null references users(id) on delete cascade,
 	payment_method_id integer references discount_rates(id),
 	payment_status text not null default 'incomplete' check(payment_status in ('complete', 'incomplete')),
@@ -36,14 +35,14 @@ create table if not exists orders(
 );
 
 create table if not exists products(
-	id serial primary key
+	id serial primary key,
 	model_name text not null,
 	brand_name text not null
 );
 
 
 create table if not exists variants(
-	variant_id serial primary key,
+	id serial primary key,
 	product_id integer references products(id),
 	color text not null,
 	price money not null
@@ -52,8 +51,9 @@ create table if not exists variants(
 
 
 create table if not exists order_compositions(
-	order_id text not null references orders(order_id) on delete cascade,
-	variant_id text not null references variants(variant_id)
+	order_id integer not null references orders(id) on delete cascade,
+	variant_id integer not null references variants(id),
+	quantity integer not null default 1
 );
 
 /* End : Queries to create tables for e-commerce database schema */
@@ -66,11 +66,11 @@ create table if not exists order_compositions(
 
 /* Start : Queries to insert data into tables*/
 
-insert into users values(1, 'shubh@gmail.com', '12345678', 'Shubham Patil', 'buyer');
-insert into users values(2, 'abc@gmail.com', '12345678', 'Akash Kumar', 'buyer');
-insert into users values(3, 'fk@gmail.com', '12345678', 'Fateh Khan', 'buyer');
-insert into users values(4, 'abd@gmail.com', '12345678', 'Abdhullah', 'buyer');
-insert into users values(5, 'mk@gmail.com', '12345678', 'manager kumar', 'inventory manager');
+insert into users(email, password, name, type) values('shubh@gmail.com', '12345678', 'Shubham Patil', 'buyer');
+insert into users(email, password, name, type) values('abc@gmail.com', '12345678', 'Akash Kumar', 'buyer');
+insert into users(email, password, name, type) values('fk@gmail.com', '12345678', 'Fateh Khan', 'buyer');
+insert into users(email, password, name, type) values('abd@gmail.com', '12345678', 'Abdhullah', 'buyer');
+insert into users(email, password, name, type) values('mk@gmail.com', '12345678', 'manager kumar', 'inventory manager');
 
 insert into addresses values(1, 'pune', 'mh', '411046');
 insert into addresses values(2, 'delhi', 'dh', '411041');
@@ -78,20 +78,20 @@ insert into addresses values(3, 'delhi', 'dh', '411047');
 insert into addresses values(4, 'pune', 'mh', '411042');
 insert into addresses values(5, 'mumbai', 'mh', '411043');
 
-insert into products values('np041', 'nexus 6p');
-insert into products values('np042', 'nexus 7p');
-insert into products values('np040', 'nexus 5');
+insert into products(model_name, brand_name) values('np041', 'nexus 6p');
+insert into products(model_name, brand_name) values('np042', 'nexus 7p');
+insert into products(model_name, brand_name) values('np040', 'nexus 5');
 
-insert into variants values('1', 'np041', 'black', 41000.00);
-insert into variants values('2', 'np041', 'white', 45000.00);
-insert into variants values('3', 'np042', 'black', 61000.00);
-insert into variants values('4', 'np042', 'white', 71000.00);
-insert into variants values('5', 'np040', 'black', 31000.00);
+insert into variants(product_id, color, price) values(1, 'black', 41000.00);
+insert into variants(product_id, color, price) values(1, 'white', 45000.00);
+insert into variants(product_id, color, price) values(2, 'black', 61000.00);
+insert into variants(product_id, color, price) values(2, 'white', 71000.00);
+insert into variants(product_id, color, price) values(3, 'black', 31000.00);
 
-insert into discount_rates values('debit card', 0);
-insert into discount_rates values('credit card', 5);
-insert into discount_rates values('online banking', 0);
-insert into discount_rates values('discount coupon', 10);
+insert into discount_rates(payment_method, discount) values('debit card', 0);
+insert into discount_rates(payment_method, discount) values('credit card', 5);
+insert into discount_rates(payment_method, discount) values('online banking', 0);
+insert into discount_rates(payment_method, discount) values('discount coupon', 10);
 
 
 /* End : Queries to insert data into tables*/
@@ -104,41 +104,45 @@ insert into discount_rates values('discount coupon', 10);
 /* Start : Stored procedure to place an order */
 
 create or replace function place_order(
-	input_user_id integer,
-	input_variants text[])
+	user_id integer,
+	variant_items int[],
+	items_quantity int[])
 returns void as $$
 declare
-	order_id text;
+	order_id integer;
 	cost_of_variant money;
 	type_of_user text;
-	order_cost money := 0;
+	net_order_cost money := 0;
 	counter integer := 1;
 	
 begin	
-	type_of_user := (select type from users where id = input_user_id);
+	type_of_user := (select type from users where id = user_id);
 
 	if type_of_user = 'invetory manager' then
 		raise notice 'Error : inventory manager cant buy product !';
 		return;
 	end if;
 
-	order_id := (select count(*) from orders)::text;
-	order_id := lpad((order_id::integer + 1)::text, 8, '0');
+	if array_length(variant_items, 1) <> array_length(items_quantity, 1) then
+		raise notice 'Error : Invalid quantities.';
+		return;
+	end if;
+
+	order_id := (select count(*) from orders) + 1;
+
+	insert into orders(order_id, user_id, payment_method_id) 
+	values(lpad((order_id)::text, 8, '0'), user_id, null);
+
+	while counter <= array_length(variant_items, 1) loop
+		cost_of_variant := (select price from variants where id = variant_items[counter]);
+		net_order_cost := net_order_cost + (cost_of_variant * items_quantity[counter]);
+		insert into order_compositions values(order_id, variant_items[counter], items_quantity[counter]);
+		counter := counter + 1;
+	end loop;
+
+	update orders set order_cost = net_order_cost;
 	
-	while counter <= array_length(input_variants, 1) loop
-		cost_of_variant := (select price from variants where variant_id = input_variants[counter]);
-		order_cost := order_cost + cost_of_variant;
-		counter := counter + 1;
-	end loop;
 
-	insert into orders values(order_id, input_user_id, null, 'incomplete', now(), order_cost, null);
-
-	counter := 1;
-
-	while counter <= array_length(input_variants, 1) loop
-		insert into order_compositions values(order_id, input_variants[counter]);
-		counter := counter + 1;
-	end loop;
 end; $$
 language plpgsql;
 
@@ -152,28 +156,29 @@ language plpgsql;
 
 create or replace function do_payment(
 	input_user_id integer,
-	input_order_id text,
-	input_payment_method text)
+	input_order_id integer,
+	input_payment_method_id integer)
 returns void as $$	
 declare
 	check_order_validity integer := 0;
 	current_payment_status text;
 begin
 
-	check_order_validity := (select count(*) from orders where order_id = input_order_id and user_id = input_user_id);
+	check_order_validity := (select count(*) from orders where id = input_order_id and user_id = input_user_id);
 
 	if check_order_validity = 0 then
 		raise notice 'Error ! You have not placed this order.';
 		return;
 	end if;
 
-	current_payment_status := (select payment_status from orders where order_id = input_order_id);
+	current_payment_status := (select payment_status from orders where id = input_order_id);
 
 	if current_payment_status = 'incomplete' then
 		update orders set 
-		payment_method = input_payment_method,
-		payment_status = 'complete'
-		where order_id = input_order_id;
+		payment_method_id = input_payment_method_id,
+		payment_status = 'complete',
+		order_cost = order_cost - (order_cost * (select discount from discount_rates where id = input_payment_method_id))
+		where id = input_order_id;
 	else
 		raise notice 'Error ! Payment for this order is already done.';
 	end if;
@@ -198,17 +203,17 @@ declare
 	current_payment_status text;
 begin
 
-	check_order_validity := (select count(*) from orders where order_id = input_order_id and user_id = input_user_id);
+	check_order_validity := (select count(*) from orders where id = input_order_id and user_id = input_user_id);
 
 	if check_order_validity = 0 then
 		raise notice 'Error ! You have not placed this order.';
 		return;
 	end if;
 
-	current_payment_status := (select payment_status from orders where order_id = input_order_id);
+	current_payment_status := (select payment_status from orders where id = input_order_id);
 
 	if current_payment_status = 'incomplete' then
-		delete from orders where order_id = input_order_id;
+		delete from orders where id = input_order_id;
 		raise notice 'Thanks. Your order has been cancelled.';
 	else
 		/*call some refund procedure here*/
@@ -227,11 +232,11 @@ language plpgsql;
 
 /* Start : Query to generate view for details of product sold */
 
-create view details_of_products_sold as
+create or replace view details_of_products_sold as
 select orders.order_id, orders.order_cost, orders.order_date,
-discount_rates.discount, orders.payment_method, orders.payment_status 
+discount_rates.discount, discount_rates.payment_method, orders.payment_status 
 from orders inner join discount_rates 
-on orders.payment_method = discount_rates.payment_method;
+on orders.payment_method_id = discount_rates.id;
 
 /* End : Query to generate view for details of product sold */
 
@@ -246,11 +251,13 @@ on orders.payment_method = discount_rates.payment_method;
 create or replace function generate_monthly_report()
 returns void as $$
 begin
+	drop table if exists monthly_report;
+	
 	create table monthly_report as(
 	select 
-		orders.order_id, orders.order_date,
-		products.product_name,
-		variants.price,
+		orders.order_id as id, orders.order_date,
+		string_agg(concat(products.brand_name, ' ', products.model_name), ', ' ) as product_names,
+		string_agg(variants.price::text, ', ') as product_prices,
 		orders.order_cost,
 		users.name, users.email
 
@@ -259,16 +266,18 @@ begin
 	inner join orders 
 		on users.id = orders.user_id
 	inner join order_compositions 
-		on orders.order_id = order_compositions.order_id
+		on orders.id = order_compositions.order_id
 	inner join variants 
-		on order_compositions.variant_id = variants.variant_id 
+		on order_compositions.variant_id = variants.id 
 	inner join products 
-		on variants.product_id = products.product_id
+		on variants.id = products.id
 	where
 		orders.order_date >= now() - interval '1 month'
-	order by
-		orders.order_date	
+	group by
+		orders.order_id, orders.order_date, orders.order_cost, users.name, users.email
 	);
+
+	alter table monthly_report add primary key(id);
 end; $$
 language plpgsql;
 
@@ -304,7 +313,7 @@ returns trigger as $$
 declare
 	new_order_cost integer:= 0;
 begin
-	new_order_cost := (select sum(price) from variants
+	new_order_cost := (select sum(variants.price * order_compositions.quantity) from variants
 				inner join order_compositions on 
 				variants.variant_id = order_compositions.variant_id
 				and 
