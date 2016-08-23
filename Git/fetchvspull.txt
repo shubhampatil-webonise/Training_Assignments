@@ -1,0 +1,3 @@
+Git Fetch : bring my local copy of remote repository in sync with actual remote repository without touching or merging local copy of remote repository with local copy of working branch
+
+Git Pull : first do fetch and then merge my local copy of remote repository with my local working branch 
