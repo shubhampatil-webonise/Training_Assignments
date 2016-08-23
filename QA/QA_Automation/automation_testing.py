@@ -16,35 +16,31 @@ class AutomationTesting(unittest.TestCase):
 	def test_automation(self):
 		
 		self.driver.get("https://www.tripadvisor.in")
-		
-		element = self.driver.find_element_by_id('rdoFlights')
-		element.click()
 
-		
-		element = self.driver.find_element_by_id('metaFlightFrom')
-		element.clear()
-		element.send_keys("Pune")
+		flights_tab_button = self.driver.find_element_by_id('rdoFlights')
+		flights_tab_button.click()
 
+		flight_source_input = self.driver.find_element_by_id('metaFlightFrom')
+		flight_source_input.clear()
+		flight_source_input.send_keys("Pune")
 
-		element = WebDriverWait(self.driver, 10).until(
+		source_choices_dropdown = WebDriverWait(self.driver, 10).until(
 				EC.visibility_of_element_located((By.XPATH, "//ul[@class = 'autocompleter-choices flights'][1]"))
 			)
 
-		option = element.find_element_by_class_name('autocompleter-selected')
-		option.click()
+		source_choice_selected = source_choices_dropdown.find_element_by_class_name('autocompleter-selected')
+		source_choice_selected.click()
 
-		
+		flight_destination_input = self.driver.find_element_by_id('metaFlightTo')
+		flight_destination_input.clear()
+		flight_destination_input.send_keys("Delhi")
 
-		element = self.driver.find_element_by_id('metaFlightTo')
-		element.clear()
-		element.send_keys("Delhi")
-
-		element = WebDriverWait(self.driver, 10).until(
+		destination_choice_dropdown = WebDriverWait(self.driver, 10).until(
 				EC.visibility_of_element_located((By.XPATH, "//ul[@class = 'autocompleter-choices flights'][2]"))
 			)
 
-		option = element.find_element_by_class_name('autocompleter-selected')
-		option.click()
+		destination_choice_selected = destination_choice_dropdown.find_element_by_class_name('autocompleter-selected')
+		destination_choice_selected.click()
 
 		#element = self.driver.find_element_by_id('checkIn')
 		#element.click()
@@ -53,81 +49,68 @@ class AutomationTesting(unittest.TestCase):
 		#element = self.driver.find_element_by_id('checkOut')
 		#element.click()
 
-		element = self.driver.find_element_by_id('fadults')
-		element.click()
+		number_of_travellers = self.driver.find_element_by_id('fadults')
+		number_of_travellers.click()
 
-		options = element.find_elements_by_tag_name('option')
-
-		#option = random.choice(options)
-		#option.click()
+		options = number_of_travellers.find_elements_by_tag_name('option')
 
 		for option in options:
 			if option.get_attribute('value') == "2": #user_value
 				option.click()
 
-		#self.driver.execute_script("window.scrollTo(0,0)")
+		self.driver.execute_script("window.scrollTo(0,0)")
 
-		element = self.driver.find_element_by_id('SUBMIT_FLIGHTS')
-		element.click()
+		search_button = self.driver.find_element_by_id('SUBMIT_FLIGHTS')
+		search_button.click()
 
 		try:
-			element = WebDriverWait(self.driver, 10).until(
+			popup_modal = WebDriverWait(self.driver, 10).until(
 					EC.visibility_of_element_located((By.CLASS_NAME, "ui_modal"))
 				)
 
-			close = element.find_element_by_xpath(".//div[@class = 'ui_close_x']")
-			close.click()
+			close_button = popup_modal.find_element_by_xpath(".//div[@class = 'ui_close_x']")
+			close_button.click()
 
 		except :
 
 			print "No pop up !"
 
 
-		print self.driver.window_handles
+		WebDriverWait(self.driver, 10).until(
+				lambda driver: len(self.driver.window_handles) > 1
+			)
 
-		if len(self.driver.window_handles) > 1:
-			for x in range(1, len(self.driver.window_handles)):
-				self.driver.switch_to_window(self.driver.window_handles[x])
-				self.driver.close()
+
+		for x in range(1, len(self.driver.window_handles)):
+			self.driver.switch_to_window(self.driver.window_handles[x])
+			self.driver.close()
 
 		self.driver.switch_to_window(self.driver.window_handles[0])
 
-		element = WebDriverWait(self.driver, 100).until(
+		more_sort_filter = WebDriverWait(self.driver, 60).until(
 				EC.visibility_of_element_located((By.XPATH, "//div[@id = 'taplc_flight_results_sorts_0']/descendant::span[@class = 'sort_item sort_item_more']/label"))
 			)
 
+		more_sort_filter.click()
 
-
-		element.click()
-
-
-		#filters = self.driver.find_elements_by_xpath("//div[@id = 'sort_sub_items']/div[@class = 'sub_sort_item']")
-
-		#filters.find_element_by_tag_name('label').click()
-
-		WebDriverWait(self.driver, 10).until(
-				EC.visibility_of_element_located((By.CLASS_NAME, "flightList"))
-			)
-
-		self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-		self.driver.execute_script("window.scrollTo(0, 0);")
-
-		filters = WebDriverWait(self.driver, 10).until(
+		sort_filters =  WebDriverWait(self.driver, 10).until(
 				EC.presence_of_all_elements_located((By.XPATH, "//div[@id = 'sort_sub_items']/div[@class = 'sub_sort_item']"))
 			)
 
-		random_filter = random.choice(filters)
-		random_filter.find_element_by_tag_name('label').click()
+		selected_filter = random.choice(sort_filters)
+		selected_filter.find_element_by_tag_name('label').click()
 
 		WebDriverWait(self.driver, 10).until(
-				EC.invisibility_of_element_located((By.XPATH, "//div[@id = 'loadingOverlay']"))
-			)
+			EC.invisibility_of_element_located((By.XPATH, "//div[@id = 'loadingOverlay']"))
+		)
 
 		elements = WebDriverWait(self.driver, 10).until(
-				EC.presence_of_all_elements_located((By.XPATH, "//div[@id = 'taplc_flight_list_0']/descendant::div[@class = 'flightList']/div[@class = 'entry show']//div[@class='mainButton']"))
-			)
+			EC.presence_of_all_elements_located((By.XPATH, "//div[@id = 'taplc_flight_list_0']/descendant::div[@class = 'flightList']/div[@class = 'entry show']//div[@class='mainButton']"))
+		)
 
 		print len(elements)
+
+		''' 
 
 		flight_booking_buttons = self.driver.find_elements_by_xpath("//div[@id = 'taplc_flight_list_0']/descendant::div[@class = 'flightList']/div[@class = 'entry show']//div[@class='mainButton']")
 
@@ -141,7 +124,7 @@ class AutomationTesting(unittest.TestCase):
 
 
 
-		button.click()
+		button.click()'''
 
 		'''flight_list = WebDriverWait(self.driver, 10).until(
 				EC.visibility_of_element_located((By.XPATH, "//div[@id = 'taplc_flight_list_0']/descendant::div[@class = 'flightList']"))
