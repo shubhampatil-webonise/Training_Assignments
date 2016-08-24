@@ -1,3 +1,4 @@
 argparse==1.2.1
 selenium==2.53.6
+unittest-data-provider==1.0.1
 wsgiref==0.1.2
