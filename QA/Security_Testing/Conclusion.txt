@@ -1,0 +1,26 @@
+1) No Critical/High impact vulnerabilities found in network.
+
+
+Medium Impact Vulnerabilities:
+
+	- Plugin 90317 : Weak Encryption or No encryption algorithms are supported by the remote host on port tcp/22.
+	- Plugin 12085 : Remote tomcat server contains some example files which can be used to get information about remote tomcat on port tcp/8080
+
+
+Low Impact Vulnerabilities:
+
+	- Plugin 70658 : Plain texts can be obtained from cipher text of SSH server on port tcp/22 due to support of Cipher Block Chaining
+	- Plugin 71049 : Weak MAC algorithms are supported by SSH server on port tcp/22.
+
+2) Plugin 12053 (FQDN Resolution) exposes the name of host machine on port tcp/0 (should be closed if unwanted).
+3) Plugin 11936 (OS Identification) exposes the type of OS used on host machine on port tcp/0 (should be closed)
+4) Plugin 45590 (Common Platform enumeration) can expose the approximate information of softwares installed on the host on port tcp/0.
+5) Plugin 54615 (Device Type) exposes the type of device host machine is on port tcp/0.
+6) Plugin 10287 (Traceroute information) exposes the network route through which host can be reached on port udp/0 (should be closed)
+7) Plugin 10267 (SSH information) exposes remote SSH type and information by sending an empty authentication request on port tcp/22.
+
+
+
+Open Ports :
+
+9090/tcp, 8080/tcp, 443/tcp, 80/tcp, 22/tcp, 
