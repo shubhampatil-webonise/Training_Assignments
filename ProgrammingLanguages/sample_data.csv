@@ -1,4 +1,4 @@
-1, 4.00, burger
+1, 4.00,    burger   
 1, 8.00, tofu_log
 2, 5.00, burger
 2, 6.50, tofu_log
@@ -10,3 +10,5 @@
 5, 8.00, fancy_european_water
 6, 5.00, fancy_european_water
 6, 6.00, extreme_fajita, jalapeno_poppers, extra_salsa
+7, 5.00, fancy_european_water, extreme_fajita
+7, 4.00, fancy_european_water, extreme_fajita, jalapeno_poppers, extra_salsa
