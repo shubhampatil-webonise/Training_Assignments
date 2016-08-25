@@ -27,9 +27,200 @@ def csvParser():
 
 			super_tuple = super_tuple + (data_tuple,)
 
-	#return super_tuple
+	return super_tuple
 
-	return (('25/8/2016', '26/8/2016', '1'),)
+
+def select_flight_tab(driver):
+	
+	flights_tab_button = driver.find_element_by_id('rdoFlights')
+	flights_tab_button.click()
+
+
+def set_source_and_destination(driver):
+
+	flight_source_input = driver.find_element_by_id('metaFlightFrom')
+	flight_source_input.clear()
+	flight_source_input.send_keys("Pune")
+
+	try:
+		source_choices_dropdown = WebDriverWait(driver, 10).until(
+				EC.visibility_of_element_located((By.XPATH, "//ul[@class = 'autocompleter-choices flights'][1]"))
+			)
+
+	except:
+		flight_source_input.send_keys(Keys.TAB)
+
+
+	source_choice_selected = source_choices_dropdown.find_element_by_class_name('autocompleter-selected')
+	source_choice_selected.click()
+
+	flight_destination_input = driver.find_element_by_id('metaFlightTo')
+	flight_destination_input.clear()
+	flight_destination_input.send_keys("Delhi")
+
+	try:
+		destination_choice_dropdown = WebDriverWait(driver, 10).until(
+				EC.visibility_of_element_located((By.XPATH, "//ul[@class = 'autocompleter-choices flights'][2]"))
+			)
+
+	except:
+		flight_destination_input.send_keys(Keys.TAB)
+
+
+	destination_choice_selected = destination_choice_dropdown.find_element_by_class_name('autocompleter-selected')
+	destination_choice_selected.click()
+
+
+
+def set_flight_dates(driver, id, check_date):
+
+	date_input = driver.find_element_by_id(id)
+	date_input.click()
+
+	calendar = driver.find_element_by_class_name('calendar')
+
+	check_date = datetime.strptime(check_date, '%d/%m/%Y').date()
+
+	if id == 'metaCheckInSpan':
+		current_check_date = date_input.find_element_by_id('checkIn').get_attribute('value')
+	else:
+		current_check_date = date_input.find_element_by_id('checkOut').get_attribute('value')
+
+
+	current_check_date = datetime.strptime(current_check_date, '%d/%m/%Y').date()
+
+	month_and_year = check_date.strftime('%B') + " " + check_date.strftime('%Y')
+	date = check_date.strftime('%d')
+
+	if check_date > current_check_date:
+
+		while( month_and_year not in calendar.text):
+
+			nav_next_handler = WebDriverWait(driver, 5).until(
+					EC.element_to_be_clickable((By.XPATH, ".//span[@class = 'next']/a"))
+				)
+
+			nav_next_handler.click()
+			time.sleep(2)
+
+		calendar_date = WebDriverWait(driver, 5).until(
+				EC.element_to_be_clickable((By.XPATH, ".//div[@class = 'calendar']//div[.//*[contains(text(), '"+ month_and_year +"')]]//*[contains(text(), '"+ date +"')]"))
+			)
+
+		calendar_date.click()
+
+
+	else:
+
+		while( month_and_year not in calendar.text):
+			
+			nav_prev_handler = WebDriverWait(driver, 5).until(
+					EC.element_to_be_clickable((By.XPATH, ".//span[@class = 'prev']/a"))
+				)
+
+			nav_prev_handler.click()
+			time.sleep(2)
+
+
+		calendar_date = WebDriverWait(driver, 5).until(
+				EC.element_to_be_clickable((By.XPATH, ".//div[@class = 'calendar']//div[.//*[contains(text(), '"+ month_and_year +"')]]//*[contains(text(), '"+ date +"')]"))
+			)
+
+		calendar_date.click()
+
+
+
+def set_number_of_travellers(driver, number_of_travellers):
+	travellers = driver.find_element_by_id('fadults')
+	travellers.click()
+
+	options = travellers.find_elements_by_tag_name('option')
+
+	for option in options:
+		if option.get_attribute('value') == str(number_of_travellers): #user_value
+			option.click()
+
+	driver.execute_script("window.scrollTo(0,0)")
+
+
+
+def handle_popups(driver):
+	print "waiting for popup"
+
+	try:
+		popup_modal = WebDriverWait(driver, 30).until(
+				EC.visibility_of_element_located((By.XPATH, ".//*[@class = 'ui_overlay ui_modal no_padding']"))
+			)
+
+		close_button = popup_modal.find_element_by_xpath(".//div[@class = 'ui_close_x']")
+		close_button.click()
+
+	except :
+
+		print "No pop up !"
+
+	driver = driver
+	
+	WebDriverWait(driver, 10).until(
+			lambda driver : len(driver.window_handles) > 1
+		)
+
+
+	for x in range(1, len(driver.window_handles)):
+		driver.switch_to_window(driver.window_handles[x])
+		driver.close()
+
+	driver.switch_to_window(driver.window_handles[0])
+
+
+
+def select_random_filter(driver):
+
+	more_sort_filter = WebDriverWait(driver, 60).until(
+			EC.visibility_of_element_located((By.XPATH, "//div[@id = 'taplc_flight_results_sorts_0']/descendant::span[@class = 'sort_item sort_item_more']/label"))
+		)
+
+	more_sort_filter.click()
+
+	sort_filters =  WebDriverWait(driver, 10).until(
+			EC.presence_of_all_elements_located((By.XPATH, "//div[@id = 'sort_sub_items']/div[@class = 'sub_sort_item']"))
+		)
+
+	selected_filter = random.choice(sort_filters)
+	selected_filter.find_element_by_tag_name('label').click()
+
+	WebDriverWait(driver, 10).until(
+		EC.invisibility_of_element_located((By.XPATH, "//div[@id = 'loadingOverlay']"))
+	)
+
+
+def select_random_flight(driver):
+
+	flights = WebDriverWait(driver, 20).until(
+		EC.presence_of_all_elements_located((By.XPATH, "//div[@id = 'taplc_flight_list_0']//div[@class = 'flightList']/div[@class = 'entry show']"))#//div[.//*[contains(text(), 'Musafir.com')]]//div[@class='mainButton']"))
+	)
+
+
+	flights = driver.find_elements_by_xpath("//div[@id = 'taplc_flight_list_0']//div[@class = 'flightList']/div[@class = 'entry show']")
+	random_flight = random.choice(flights)
+
+	driver.execute_script("return arguments[0].scrollIntoView();", random_flight)
+	driver.execute_script("window.scrollBy(0, -150);")
+
+	flight_booking_button = random_flight.find_element_by_xpath(".//div[@class = 'purchaseLinkColumn']//div[@class = 'mainButton']")
+	
+	amount_of_booking = random_flight.find_element_by_xpath(".//div[@class = 'purchaseLinkColumn']//span[@class = 'price']").text
+	airline_name = random_flight.find_element_by_xpath(".//div[@class = 'flightInfoColumn']//div[@class = 'airlineName']").text
+
+	flight_booking_button.click()
+	driver.switch_to_window(driver.window_handles[0])
+
+	print "\n\nFlight Details  ======================== "
+	print "Airline Name :", airline_name
+	print "Flight : ", amount_of_booking
+	print "=========================================== "
+
+
 
 
 class AutomationTesting(unittest.TestCase):
@@ -42,164 +233,40 @@ class AutomationTesting(unittest.TestCase):
 
 
 	@data_provider(data_under_test)
-	def test_automation(self, checkin_date, checkout_date, number_of_travellers):
+	def test_flow_of_tripadvisor_dot_in(self, checkin_date, checkout_date, number_of_travellers):
 
-		print checkin_date
-		print checkout_date
-		print number_of_travellers
 		
 		self.driver = webdriver.Firefox()		
 		self.driver.get("https://www.tripadvisor.in")
 
+		self.assertEqual( self.driver.title, "TripAdvisor: Read Reviews, Compare Prices & Book")
+		self.assertTrue( "Find and book your ideal trip at the lowest prices" in self.driver.find_element_by_id('taplc_brand_homepage_header_box_0').text)
+		self.assertTrue( "Millions of traveller reviews and photos to help you get it right." in self.driver.find_element_by_id('taplc_brand_homepage_header_box_0').text)
 
-		flights_tab_button = self.driver.find_element_by_id('rdoFlights')
-		flights_tab_button.click()
+		select_flight_tab(self.driver)		
+		set_source_and_destination(self.driver)
 
-		flight_source_input = self.driver.find_element_by_id('metaFlightFrom')
-		flight_source_input.clear()
-		flight_source_input.send_keys("Pune")
+		set_flight_dates(self.driver, 'metaCheckInSpan', checkin_date)
+		set_flight_dates(self.driver, 'metaCheckOutSpan', checkout_date)
 
-		source_choices_dropdown = WebDriverWait(self.driver, 10).until(
-				EC.visibility_of_element_located((By.XPATH, "//ul[@class = 'autocompleter-choices flights'][1]"))
-			)
-
-		source_choice_selected = source_choices_dropdown.find_element_by_class_name('autocompleter-selected')
-		source_choice_selected.click()
-
-		flight_destination_input = self.driver.find_element_by_id('metaFlightTo')
-		flight_destination_input.clear()
-		flight_destination_input.send_keys("Delhi")
-
-		destination_choice_dropdown = WebDriverWait(self.driver, 10).until(
-				EC.visibility_of_element_located((By.XPATH, "//ul[@class = 'autocompleter-choices flights'][2]"))
-			)
-
-		destination_choice_selected = destination_choice_dropdown.find_element_by_class_name('autocompleter-selected')
-		destination_choice_selected.click()
-
-		checkin = self.driver.find_element_by_id('metaCheckInSpan')
-		checkin.click()
-
-		calendar = self.driver.find_element_by_class_name('calendar')
-
-		nav_prev_handler = calendar.find_element_by_xpath(".//span[@class = 'prev']/a")
-		nav_next_handler = calendar.find_element_by_xpath(".//span[@class = 'next']/a")
-
-
-		checkin_date = datetime.strptime(checkin_date, '%d/%m/%Y').date()
-		print checkin_date
-
-		current_checkin_date = checkin.find_element_by_id('checkIn').get_attribute('value')
-		#current_checkin_date = datetime.strptime("28/2/2017", '%d/%m/%Y').date()
-		current_checkin_date = datetime.strptime(current_checkin_date, '%d/%m/%Y').date()
-		print current_checkin_date
-
-		print current_checkin_date.month - checkin_date.month
-
-		if checkin_date > current_checkin_date:
-			month_diff = (checkin_date.year - current_checkin_date.year)*12 + (checkin_date.month - checkin_date.month)
-
-			for x in range(month_diff):
-				nav_next_handler.click()
-
-		else:
-			month_diff = (current_checkin_date.year - checkin_date.year)*12 + (current_checkin_date.month - checkin_date.month)
-
-			for x in range(month_diff):
-				nav_prev_handler.click()
-
-	
-		'''
-		#checkout = self.driver.find_element_by_id('metaCheckOutSpan')
-		#checkout.click()
-
-		#calendar = self.driver.find_element_by_class_name('calendar')
-
-		#nav_prev_handler = calendar.find_element_by_xpath(".//span[@class = 'prev']/a")
-		#nav_next_handler = calendar.find_element_by_xpath(".//span[@class = 'next']/a")
-
-	
-		travellers = self.driver.find_element_by_id('fadults')
-		travellers.click()
-
-		options = travellers.find_elements_by_tag_name('option')
-
-		for option in options:
-			if option.get_attribute('value') == str(number_of_travellers): #user_value
-				option.click()'''
-
-		'''
-		self.driver.execute_script("window.scrollTo(0,0)")
+		set_number_of_travellers(self.driver, number_of_travellers)
 
 		search_button = self.driver.find_element_by_id('SUBMIT_FLIGHTS')
 		search_button.click()
 
-		try:
-			popup_modal = WebDriverWait(self.driver, 10).until(
-					EC.visibility_of_element_located((By.CLASS_NAME, "ui_modal"))
-				)
 
-			close_button = popup_modal.find_element_by_xpath(".//div[@class = 'ui_close_x']")
-			close_button.click()
-
-		except :
-
-			print "No pop up !"
+		self.assertEqual(self.driver.title, "Cheap flights to New Delhi (DEL) - TripAdvisor")
+		self.assertTrue("Pune" in self.driver.find_element_by_class_name('topBar').text)
+		self.assertTrue("New Delhi" in self.driver.find_element_by_class_name('topBar').text)
+		self.assertTrue("Prices include taxes and fees, so you'll know the real cost up front." in self.driver.find_element_by_id('taplc_flight_search_price_disclaimer_0').text)
 
 
-		WebDriverWait(self.driver, 10).until(
-				lambda : len(self.driver.window_handles) > 1
-			)
+		handle_popups(self.driver)
+		select_random_filter(self.driver)
 
-
-		for x in range(1, len(self.driver.window_handles)):
-			self.driver.switch_to_window(self.driver.window_handles[x])
-			self.driver.close()
-
-		self.driver.switch_to_window(self.driver.window_handles[0])
-
-		more_sort_filter = WebDriverWait(self.driver, 60).until(
-				EC.visibility_of_element_located((By.XPATH, "//div[@id = 'taplc_flight_results_sorts_0']/descendant::span[@class = 'sort_item sort_item_more']/label"))
-			)
-
-		more_sort_filter.click()
-
-		sort_filters =  WebDriverWait(self.driver, 10).until(
-				EC.presence_of_all_elements_located((By.XPATH, "//div[@id = 'sort_sub_items']/div[@class = 'sub_sort_item']"))
-			)
-
-		selected_filter = random.choice(sort_filters)
-		selected_filter.find_element_by_tag_name('label').click()
-
-		WebDriverWait(self.driver, 10).until(
-			EC.invisibility_of_element_located((By.XPATH, "//div[@id = 'loadingOverlay']"))
-		)
-
-		flights = WebDriverWait(self.driver, 20).until(
-			EC.presence_of_all_elements_located((By.XPATH, "//div[@id = 'taplc_flight_list_0']//div[@class = 'flightList']/div[@class = 'entry show']"))#//div[.//*[contains(text(), 'Musafir.com')]]//div[@class='mainButton']"))
-		)
-
-
-		flights = self.driver.find_elements_by_xpath("//div[@id = 'taplc_flight_list_0']//div[@class = 'flightList']/div[@class = 'entry show']")
-		random_flight = random.choice(flights)
-
-		self.driver.execute_script("return arguments[0].scrollIntoView();", random_flight)
-		self.driver.execute_script("window.scrollBy(0, -150);")
-
-		flight_booking_button = random_flight.find_element_by_xpath(".//div[@class = 'purchaseLinkColumn']//div[@class = 'mainButton']")
+		select_random_flight(self.driver)
 		
-		amount_of_booking = random_flight.find_element_by_xpath(".//div[@class = 'purchaseLinkColumn']//span[@class = 'price']").text
-		airline_name = random_flight.find_element_by_xpath(".//div[@class = 'flightInfoColumn']//div[@class = 'airlineName']").text
-
-		flight_booking_button.click()
-		self.driver.switch_to_window(self.driver.window_handles[0])
-
-		print "Flight Details  ======================== "
-		print "Airline Name :", airline_name
-		print "Flight : ", amount_of_booking
-		print "=========================================== "'''
-		
-		#self.driver.close()
+		self.driver.close()
 
 
 	def tearDown(self):
@@ -208,5 +275,4 @@ class AutomationTesting(unittest.TestCase):
 
 
 if __name__ == "__main__":
-	#AutomationTesting.number_of_travellers = 4
 	unittest.main()
