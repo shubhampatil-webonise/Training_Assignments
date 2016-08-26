@@ -1,0 +1,124 @@
+body {
+    width: 1170px;
+    margin: 0 auto;
+}
+
+.clear{
+    clear: both;
+}
+
+.nav {
+    position: relative;
+    background-color: dimgrey;
+    padding: 7.5px 0px;
+}
+
+.nav .logo {
+    float: left;
+    width: 140px;
+    height: 35px;
+    background-color: #ff8000;    
+    margin: 0px 50px 0px 150px;
+}
+
+.nav ul{
+    float: left;
+    line-height: 35px;
+}
+
+.nav ul li {
+    float: left;
+    margin: 0px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: sans-serif;
+    
+}
+
+.nav ul li a {
+    color: #aaaaaa;
+    text-decoration: none;
+}
+
+
+.banner {
+    position: relative;
+    height: 485px;
+    background-color: #71c4ea;
+}
+
+
+.content {
+    position: relative;
+    text-align: center;
+}
+
+
+.content p:first-child{
+    font-size: 36px;
+    color: #444444;
+    margin-top: 64px;
+    margin-bottom: 70px;
+    font-weight: bold;
+    font-family: sans-serif;
+}
+
+
+.content ul {
+    display: inline-block;
+    margin-bottom: 110px;
+}
+
+.content ul li {
+    float: left;
+}
+
+.content ul li div{
+    height: 140px;
+    width: 140px;
+    margin : 0px 37.5px 15px 37.5px;
+    border-radius: 70px;
+    background-color: #efefef;
+}
+
+.content ul li p {
+    text-align: center;
+    line-height: 22px;
+    font-size: 18px;
+    color: #888888;
+    font-family: sans-serif;
+}   
+
+.content ul li p:hover{
+    color: #444444;
+}
+
+.footer {
+    position: relative;
+    background-color: #ececec;
+    text-align: center;
+}
+
+
+.footer ul{
+    display: inline-block;
+}
+
+.footer ul li {
+    float: left;
+    margin: 0px 20px;
+}
+
+.footer ul li a {
+    text-decoration: none;
+    color: #ff8000;
+    font-size: 16px;   
+    font-family: sans-serif;
+    font-weight: bold;
+    line-height: 40px;
+    
+}
+
+.footer ul li a:hover {
+    color: #444444;
+}
