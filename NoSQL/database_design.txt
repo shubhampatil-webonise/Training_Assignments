@@ -27,33 +27,37 @@ Design of single entry for user:
 		<other_profile_details>
 	},
 
-	roles : {
+	role : {
 		position : <user/admin/editor/superadmin>,
 
-		can_update : <boolean>,
+		can_update_post : <boolean>,
 
-		can_delete : <boolean>
+		can_delete_post : <boolean>,
+
+		access_control : [
+
+			{
+				user_under_access : <user_id>,
+
+				posts_under_access : [<post_id>, <post_id>,....]
+			},
+
+			....
+		]
 	},
 
 	activity : {
-		post : [
-			{
-				post_id : <post_id>,
 
-				timestamp : <date_time>
-			},
-
-			<other_entries_for_post_activity>
-		],
+		post : [<post_id>, <post_id>, ..... ],
 
 		liked : [
 			{
 				post_id : <post_id>,
 
-				timestamp : <date_time>
+				liked_at : <timestamp>
 			},
 
-			<other_entries_for_like_activity>
+			.....
 		]
 	}
 }
@@ -69,37 +73,56 @@ Design of single entry for post:
 
 	user_id : <user_id>
 
-	post : {
-		heading : <post_heading>,
+	posted_at : <timestamp>
 
-		body : <post_body>,
+	heading : <post_heading>,
 
-		tags : [<tag1>, <tag2>, ....],
+	body : <post_body>,
 
-		attachments : [
-			{
-				type : image,
-				url : <image_url>
-			},
+	tags : [<tag1>, <tag2>, .... ],
 
-			{
-				type : video,
-				url : <video_url>
-			}
-		],
+	attachments : [
+		{
+			type : image,
+			url : <image_url>
+		},
 
-		comments : [
-			{
-				comment_id : <comment_id>,
+		{
+			type : video,
+			url : <video_url>
+		},
 
-				comment_body : <comment_body>,
+		.........
+	],
 
-				replies : [<reply1>, <reply2>, ....],
+	comments : [
 
-				timestamp : <date_time>
-			},
+		{
+			comment_id : <comment_id>,
 
-			<other_comment_entries>
-		]
-	}
+			comment_body : <comment_body>,
+
+			replies : [ 
+
+				{
+
+					replied_by : <user_id>,
+
+					reply_body : <reply_body>,
+
+					replied_at : <timestamp> 
+
+				},
+
+				.........
+			],
+
+			commented_at : <timestamp>
+		},
+
+		..........
+	]
+
+	liked_by : [ <user_id> , <user_id> , ...... ]
+	
 }
