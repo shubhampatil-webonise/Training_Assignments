@@ -25,27 +25,26 @@ body {
     margin-right: 50px;
 }
 
+
 .headerNav ul {
     float: left;
 }
 
-.navItem {
-    float: left;
-}
 
 .headerNav .navItem {
     margin-left: 100px;
     line-height: 35px;
+    float: left;
 }
 
-.headerNav a {
+.headerNav .navAnchor {
     color: #aaaaaa;
     font-size: 18px;
     font-weight: bold;
     padding: 10px;
 }
 
-.headerNav a:hover {
+.headerNav .navAnchor:hover {
     color: #ff8000;
 }
 
@@ -106,16 +105,14 @@ body {
     color: #444444;
 }
 
+
 .footerNav {
     text-align: center;
     background-color: #ececec;
 }
 
-.footerNav ul {
-    display: inline-block;
-}
-
 .footerNav .navItem {
+    display: inline-block;
     margin-left: 30px;
 }
 
@@ -123,7 +120,7 @@ body {
     margin-left: 0px;
 }
 
-.footerNav a {
+.footerNav .navAnchor {
     color: #ff8000;
     font-size: 16px;
     font-weight: bold;
@@ -132,6 +129,6 @@ body {
 }
 
 
-.footerNav a:hover {
+.footerNav .navAnchor:hover {
     color: #444444;
 }
