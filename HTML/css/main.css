@@ -1,0 +1,147 @@
+body {
+    font-family: georgia;
+    font-size: 13px;
+    color: #222222;
+}
+
+/* =======================================*/
+
+.header {
+    height: 80px;
+}
+
+.header .container {
+    height: 100%;
+}
+
+.dummy {
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+
+/* ==========================================*/
+
+.nav-header.navbar-default .navbar-nav>li>a {
+    color: white;
+    font-size: 15px;
+    font-style: italic;
+}
+
+.nav-header .navbar-nav>li>a {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    line-height: 25px;
+}
+
+.nav-header .navbar-form {
+    margin: 0px;
+    padding: 0px;
+}
+
+.nav-header .form-control {
+    height: 25px;
+}
+
+.nav-header .btn {
+    height: 25px;
+}
+
+.nav-header.navbar {
+    min-height:0;
+}
+
+.nav-header {
+    padding-top: 6.5px;
+    padding-bottom: 6.5px;
+}
+
+.nav-header li {
+    border-right: 1px solid dimgrey;
+}
+
+.nav-header li:first-child {
+    border-left: 1px solid dimgrey;
+}
+
+.nav-header .seperator {
+    height: 100%;
+    border: 1px solid black;
+}
+
+.nav-header {
+    background-color: #3355aa;
+    border-radius: 0px;
+    margin-bottom: 35px;
+}
+
+/*============================================*/
+
+.introduction .thumbnail {
+    padding: 10px;
+}
+
+.introduction .caption {
+    font-size: 14px;
+    font-style: italic;
+    font-weight: bold;
+    text-align: center;
+}
+
+.introduction .intro-heading {
+    font-size: 16px;
+    font-weight: bold;
+    color: #3355aa;
+    border-bottom: 2px solid #f4b444;
+    padding: 15px 0px;
+}
+
+.intro-panel p, .announcement-list p {
+    font-weight: bold;
+    line-height: 1.7;
+}
+
+
+.introduction {
+    margin-bottom: 45px;
+}
+
+/* ============================================ */
+.sectors {
+    background-color: ghostwhite;
+    padding-top: 25px;
+    padding-bottom: 75px;
+}
+
+.sectors h1 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+
+.sectors .thumbnail {
+    padding: 5px;
+}
+
+.infoBox {
+    height: 250px;
+    background-color: gainsboro;
+}
+
+
+.footer {
+    background-color: #333333;
+    padding-top: 15px;
+    padding-bottom: 35px;
+}
+
+.nav-footer {
+    background-color: #333333;
+    color : white;
+    border-bottom: 1px solid #3d3d3d;
+}
+
+.nav-footer a {
+    color: white !important ;
+}
