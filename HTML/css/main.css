@@ -151,6 +151,7 @@ body {
     background-color: ghostwhite;
     padding-top: 25px;
     padding-bottom: 75px;
+    border-top: 1px solid lightgrey;
 }
 
 .sectors h1 {
