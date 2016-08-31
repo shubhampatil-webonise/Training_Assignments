@@ -8,18 +8,8 @@ body {
 
 .header {
     height: 80px;
+    padding : 11.5px 0px;
 }
-
-.header .container {
-    height: 100%;
-}
-
-.dummy {
-    height: 100%;
-    display: inline-block;
-    vertical-align: middle;
-}
-
 
 /* ==========================================*/
 
@@ -79,6 +69,11 @@ body {
     margin-bottom: 35px;
 }
 
+.nav-header .glyphicon {
+    display: block;
+    line-height: 0;
+}
+
 /*============================================*/
 
 .introduction .thumbnail {
@@ -114,9 +109,19 @@ body {
     font-style: italic;
 }
 
+.announcement-list ul {
+    list-style-type: none;
+    padding: 0px;
+    margin-bottom: 15px;
+}
+
 .announcement {
     border-bottom: 1px solid grey;
-    padding: 4px 0px;
+}
+
+.announcement a {
+    display: block;
+    padding: 15px 0px;
 }
 
 .announcement span {
@@ -161,8 +166,26 @@ body {
     padding: 5px;
 }
 
+.sectors ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.sectors a {
+    display: block;
+}
+
+.sectors a:hover {
+    text-decoration: none;
+}
+
+.sectors .thumbnail {
+    margin : 0px;
+}
+
 .sectors .caption {
-    height: 60px;
+    min-height: 70px;
     padding: 10px 0px;
     font-size: 16px;
     color: #3355aa;
@@ -220,9 +243,11 @@ body {
 
 .nav-footer.navbar-default .navbar-nav>li>a:hover {
     color: white;
+    font-style: bold;
 }
 
-.footer h5 {
+.footer p {
+    margin-top: 10px;
     font-size: 11px;
     margin-bottom: 0px;
     color: grey;
