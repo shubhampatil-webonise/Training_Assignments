@@ -42,7 +42,10 @@ body {
 
 .nav-header .form-control {
     height: 25px;
+    font-style: italic;
 }
+
+
 
 .nav-header .btn {
     height: 25px;
@@ -89,6 +92,9 @@ body {
     text-align: center;
 }
 
+
+
+
 .introduction .intro-heading {
     font-size: 16px;
     font-weight: bold;
@@ -97,9 +103,35 @@ body {
     padding: 15px 0px;
 }
 
-.intro-panel p, .announcement-list p {
+.intro-panel p {
     font-weight: bold;
     line-height: 1.7;
+    font-size: 14px;
+}
+
+.announcement-list>a {
+    font-size: 14px;
+    font-style: italic;
+}
+
+.announcement {
+    border-bottom: 1px solid grey;
+    padding: 4px 0px;
+}
+
+.announcement span {
+    display: inline-block;
+    color: black;    
+}
+
+.announcement span:first-child {
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.announcement span:last-child {
+    font-size: 10px;
 }
 
 
@@ -108,6 +140,8 @@ body {
 }
 
 /* ============================================ */
+
+
 .sectors {
     background-color: ghostwhite;
     padding-top: 25px;
@@ -116,7 +150,10 @@ body {
 
 .sectors h1 {
     text-align: center;
+    margin-top: 0px;
     margin-bottom: 25px;
+    font-size: 28px;
+    font-weight: bold;
 }
 
 
@@ -124,11 +161,23 @@ body {
     padding: 5px;
 }
 
+.sectors .caption {
+    height: 60px;
+    padding: 10px 0px;
+    font-size: 16px;
+    color: #3355aa;
+    text-align: center;
+    font-weight: bold;
+    margin: 0px;
+    line-height: 1.4;
+}
+
 .infoBox {
     height: 250px;
     background-color: gainsboro;
 }
 
+/* ================================================ */
 
 .footer {
     background-color: #333333;
@@ -140,8 +189,41 @@ body {
     background-color: #333333;
     color : white;
     border-bottom: 1px solid #3d3d3d;
+    padding-bottom: 10px;
 }
 
-.nav-footer a {
-    color: white !important ;
+.nav-footer.navbar-default .navbar-nav>li>a {
+    color: beige;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.nav-footer .nav.navbar-left {
+    font-size: 14px;
+}
+
+.nav-footer .nav.navbar-right {
+    font-size: 11px;
+}
+
+.nav-footer li {
+    border-left: 1px solid grey;
+}
+
+.nav-footer li:first-child {
+    border-left: none;
+}
+
+.nav-footer .nav>li:first-child>a {
+    padding-left: 0px;
+}
+
+.nav-footer.navbar-default .navbar-nav>li>a:hover {
+    color: white;
+}
+
+.footer h5 {
+    font-size: 11px;
+    margin-bottom: 0px;
+    color: grey;
 }
