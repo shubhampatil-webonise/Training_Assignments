@@ -1,7 +1,9 @@
 .navbar {
     border-radius: 0;
     margin-bottom: 0;
-    min-height: none;
+    min-height: 0;
+    background-color: white;
+    border-bottom: 1px solid lightgrey;
 }
 
 .navHeader .navbar-right {
@@ -29,18 +31,213 @@
     border-radius: 15px;
 }
 
-
-.navbar-right img {
-    display: inline-block;
-}
-
-.navbar-right .customerDetailsWrapper {
+.customerDetailsWrapper {
     display: inline-block;
     vertical-align: middle;
     padding: 0px 15px;
 }
 
-.navbar-right .customerDetails {
+.customerDetailsWrapper span {
     display: block;
     line-height: normal;
+}
+
+.customerDetailsWrapper span:first-child {
+    font-size: 14px;
+    font-weight: bold;
+    color: #222222;
+}
+
+.customerDetailsWrapper span:nth-child(2) {
+    font-size: 11px;
+    color: #666666;
+}
+
+.navHeader li {
+    border-left: 1px solid lightgrey;
+}
+
+.navbar-left li:first-child {
+    border: none;
+}
+
+/* ================================== */
+
+
+.mainContent {
+    background-color: #fcfcfc;
+    padding: 30px 0px;
+    border-bottom: 1px solid lightgrey;
+}
+
+.addCustomerWrapper {
+    margin-bottom: 15px;
+    padding: 0 15px;
+}
+
+.addCustomerWrapper > span{
+    font-size: 18px;
+    color: #333333;
+    margin-right: 15px;
+}
+
+.addCustomerWrapper a {
+    display: inline-block;
+    font-size: 14px;
+    border: 1px solid #1166ee;
+    padding: 5px 10px;
+}
+
+.mainContent ul {
+    list-style: none;
+    padding: 0px;
+}
+
+.mainContent li {
+    padding: 15px
+}
+
+.cardWrapper {
+    border: 1px solid lightgrey;
+}
+
+.cardWrapper > div {
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.cardWrapper > div:first-child {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.cardWrapper a {
+    display: inline-block;
+    padding: 15px;
+}
+
+
+.logoWrapper {
+    height: 90px;
+    border-bottom: 1px solid lightgrey;
+    text-align: center;
+    line-height: 90px;
+}
+
+.company {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.company h6 {
+    font-size: 18px;
+    color: #333333;
+    margin: 0px;
+}
+
+.company span {
+    font-size: 14px;
+    color: #aaaaaa;
+}
+
+.tickets, .severityOne, .severityTwo {
+    display: inline-block;
+    vertical-align: top;
+    min-width: 68px;
+}
+
+.tickets, .assets {
+    margin-right: 60px;
+}
+
+.severityOne, .alerts {
+    margin-right: 25px;
+}
+
+.tickets span {
+    display: block;
+    color: #1166ee;
+}
+
+.tickets span:first-child {
+    font-size: 16px;
+}
+
+.tickets span:last-child {
+    font-size: 48px;
+}
+
+.severityOne span {
+    display: block;
+    color: #ff0000;
+}
+
+.severityOne span:first-child {
+    font-size: 14px;
+}
+
+.severityOne span:last-child {
+    font-size: 24px;
+}
+
+.severityTwo span {
+    display: block;
+}
+
+.severityTwo span:first-child {
+    font-size: 14px;
+}
+
+.severityTwo span:last-child {
+    font-size: 24px;
+    color: #1166ee;
+}
+
+.assets, .alerts {
+    display: inline-block;
+    vertical-align: top;
+    min-width: 68px;
+}
+
+.assets span, .alerts span {
+    display: block;
+}
+
+.assets span:first-child, .alerts span:first-child {
+    font-size: 16px;
+}
+
+.assets span:last-child, .alerts span:last-child {
+    font-size: 30px;
+    color: #1166ee;
+}
+
+.navFooter {
+    text-align: center;
+}
+
+.navFooter.navbar-default .navbar-nav>li>a {
+    font-size: 12px;
+    color: #666666;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.navFooter ul {
+    display: inline-block;
+    padding: 10px 0px;
+    float: none;
+}
+
+.navFooter .navbar-nav>li {
+    display: inline-block;
+    float: none;
+}
+
+.navFooter li {
+    border-left: 1px solid lightgrey;
+}
+
+.navFooter li:first-child {
+    border: none;
 }
