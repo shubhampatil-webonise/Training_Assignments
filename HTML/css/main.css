@@ -6,9 +6,13 @@ body {
 
 /* =======================================*/
 
-.header {
+header {
     height: 80px;
     padding : 11.5px 0px;
+}
+
+header a {
+    display: inline-block;
 }
 
 /* ==========================================*/
@@ -162,6 +166,9 @@ body {
     font-weight: bold;
 }
 
+.sectors span {
+    display: block;
+}
 
 .sectors .thumbnail {
     padding: 5px;
@@ -203,7 +210,7 @@ body {
 
 /* ================================================ */
 
-.footer {
+footer {
     background-color: #333333;
     padding-top: 15px;
     padding-bottom: 35px;
@@ -247,7 +254,7 @@ body {
     font-style: bold;
 }
 
-.footer p {
+footer p {
     margin-top: 10px;
     font-size: 11px;
     margin-bottom: 0px;
