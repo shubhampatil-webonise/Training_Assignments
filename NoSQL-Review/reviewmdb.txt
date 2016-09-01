@@ -1,0 +1,54 @@
+db.users.insert( { credentials : { email : "shubham.patil@weboniselab.com", password : "abc" }, profile_details : { name : { first_name : "shubham", last_name : "patil" }, date_of_birth : new Date(1994, 11, 17, 00, 00, 00), profile_pic : "www.abc.com", contact : 8087411046, place : "pune", }, role : { position : "user", can_update_post : false, can_delete_post : false, access_control : [] }, activity : { post : [], liked : [] } } )
+
+db.users.insert( { credentials : { email : "patil.sm17@gmail.com", password : "abc" }, profile_details : { name : { first_name : "shubham2", last_name : "patil2" }, date_of_birth : new Date(1994, 11, 17, 01, 00, 00), profile_pic : "www.abc.com", contact : 8087411047, place : "delhi", }, role : { position : "user", can_update_post : false, can_delete_post : false, access_control : [] }, activity : { post : [], liked : [] } } )
+
+db.users.insert( { credentials : { email : "shubhteenax17@gmail.com", password : "abc" }, profile_details : { name : { first_name : "shubham3", last_name : "patil3" }, date_of_birth : new Date(1994, 09, 18, 01, 00, 00), profile_pic : "www.abc.com", contact : 8082311247, place : "mumbai", }, role : { position : "user", can_update_post : false, can_delete_post : false, access_control : [] }, activity : { post : [], liked : [] } } )
+
+db.users.insert( { credentials : { email : "admin@gmail.com", password : "abc" }, profile_details : { name : { first_name : "iam", last_name : "admin" }, date_of_birth : new Date(1991, 09, 18, 01, 00, 00), profile_pic : "www.abc.com", contact : 7272311247, place : "pune", }, role : { position : "admin", can_update_post : true, can_delete_post : true, access_control : [{ user_under_access : ObjectId("57c7dd0df0d57c93d30efe5b") }, {user_under_access :ObjectId("57c7dd11f0d57c93d30efe5c") }, {user_under_access : ObjectId("57c7dd16f0d57c93d30efe5d")}] }, activity : { post : [], liked : [] } } )
+
+
+db.users.insert( { credentials : { email : "editor@gmail.com", password : "abc" }, profile_details : { name : { first_name : "iam", last_name : "editor" }, date_of_birth : new Date(1992, 09, 18, 01, 00, 00), profile_pic : "www.abc.com", contact : 7272453247, place : "pune", }, role : { position : "editor", can_update_post : true, can_delete_post : false, access_control : [ { user_under_access : ObjectId("57c7dd0df0d57c93d30efe5b") }, {user_under_access : ObjectId("57c7dd11f0d57c93d30efe5c")} ] }, activity : { post : [], liked : [] } } )
+
+
+db.users.insert( { credentials : { email : "superadmin@gmail.com", password : "abc" }, profile_details : { name : { first_name : "iam", last_name : "superadmin" }, date_of_birth : new Date(1990, 09, 18, 01, 00, 00), profile_pic : "www.abc.com", contact : 1272453247, place : "pune", }, role : { position : "superadmin", can_update_post : true, can_delete_post : true, access_control : [ { user_under_access : ObjectId("57c7dd0df0d57c93d30efe5b") }, {user_under_access : ObjectId("57c7dd11f0d57c93d30efe5c")}, {user_under_access : ObjectId("57c7dd11f0d57c93d30efe5c")}] }, activity : { post : [], liked : [] } } )
+
+db.posts.insert({ user_id : ObjectId("57c7dd0df0d57c93d30efe5b"), posted_at : new Date(), heading : "This is my first post", body : "This is the post body", tags : ["firstpost", "post"], attachments : [ { type : "image", url : "wwee.anc.com" } ] , comments : [ { comment_id : ObjectId(), commented_by : ObjectId("57c7dd16f0d57c93d30efe5d"), comment_body : "iam commenting on your post", replies : [ { replied_by : ObjectId("57c7dd0df0d57c93d30efe5b"), reply_body : "thanks", replied_at : new Date() } ], commented_at : new Date(), } ] , liked_by : [ObjectId("57c7dd7bf0d57c93d30efe5e"), ObjectId("57c7de42f0d57c93d30efe60")] } )
+
+
+db.posts.insert({ user_id : ObjectId("57c7dd11f0d57c93d30efe5c"), posted_at : new Date(), heading : "my first post", body : "Hey everybody hows it going there", tags : ["firstpost", "post", "starting"], attachments : [] , comments : [ { comment_id : ObjectId(), commented_by : ObjectId("57c7ddc7f0d57c93d30efe5f"), comment_body : "how are you ?", replies : [ { replied_by : ObjectId("57c7de42f0d57c93d30efe60"), reply_body : "he is not good", replied_at : new Date() } ], commented_at : new Date(), } ] , liked_by : [ObjectId("57c7de42f0d57c93d30efe60"), ObjectId("57c7dd11f0d57c93d30efe5c")] } )
+
+
+/* ==== add a comment ===== */
+
+db.posts.update({ _id : ObjectId("57c7dfeff0d57c93d30efe6a")}, { $push : { comments : { comment_id : ObjectId(), commented_by : ObjectId("57c7dd11f0d57c93d30efe5c"), comment_body : "hey there !", replies : [], commented_at : new Date() } } } )
+
+
+/* ==== update comment body ==== */
+
+db.posts.update( { "comments.comment_id" : ObjectId("57c7e602f0d57c93d30efe6b") }, {"$set" : { "comments.$.comment_body" : "hey there updated my comment !"}})
+
+
+/* ==== Delete a comment ==== */
+
+db.posts.update({"_id" : ObjectId("57c7dfeff0d57c93d30efe6a")}, {$pull : {comments : {comment_id : ObjectId("57c7e602f0d57c93d30efe6b")}}})
+
+
+/* ==== Find number of comments on a particular post ==== */
+
+db.posts.findOne({_id :  ObjectId("57c7dfeff0d57c93d30efe6a")}).comments.length
+
+
+/* ==== Find number of comments of each post ===== */
+
+db.posts.aggregate([{ $project : { number_of_comments : { $size : "$comments"}}}])
+
+
+/* ==== List posts with more than two comments ====== */
+
+db.posts.find({$where : "this.comments.length > 1"})
+
+
+db.posts.find({"comments.2" : {$exists : true}})
+
+
+db.posts.aggregate([{$project : {_id : 1, user_id : 1, posted_at : 1, heading : 1, body : 1, tags : 1, attachments : 1, comments : 1, liked_by : 1, number_of_comments : {$size : "$comments"}}}, {$match : {number_of_comments : {$gt : 1}}}])
