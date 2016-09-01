@@ -72,7 +72,7 @@
 
 .addCustomerWrapper {
     margin-bottom: 15px;
-    padding: 0 15px;
+    padding: 0 10px;
 }
 
 .addCustomerWrapper > span{
@@ -94,7 +94,7 @@
 }
 
 .mainContent li {
-    padding: 15px
+    padding: 10px
 }
 
 .cardWrapper {
@@ -113,7 +113,7 @@
 
 .cardWrapper a {
     display: inline-block;
-    padding: 15px;
+    padding: 17px;
 }
 
 
@@ -125,19 +125,28 @@
 }
 
 .company {
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
 
-.company h6 {
+.companyWrapper {
+    display: inline-block;
+    vertical-align: middle;
+    min-width: 300px;
+}
+
+.companyWrapper span:first-child {
     font-size: 18px;
     color: #333333;
-    margin: 0px;
+    display: block;
+    line-height: normal
 }
 
-.company span {
+.companyWrapper span:nth-child(2) {
     font-size: 14px;
     color: #aaaaaa;
+    display: block;
+    line-height: normal;
 }
 
 .tickets, .severityOne, .severityTwo {
@@ -211,6 +220,8 @@
     font-size: 30px;
     color: #1166ee;
 }
+
+/* =================================== */
 
 .navFooter {
     text-align: center;
