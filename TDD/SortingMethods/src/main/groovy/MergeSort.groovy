@@ -1,42 +1,44 @@
 /**
- * Created by webonise on 29/8/16.
+ * Created by shubham on 4/9/16.
  */
 class MergeSort implements SortingMethod {
     def sort(array){
-        println("3" + array)
-        println(array.size())
-        mergesort(array, 0, array.size() - 1)
-    }
 
-    def mergesort(array, start, end){
+        if(! (array instanceof ArrayList)){
+            throw new Exception();
+        }
 
+        array.each {
+            arrayElement ->
+                if(!(arrayElement instanceof Integer || arrayElement instanceof BigDecimal))
+                    throw new Exception()
+        }
 
-        if (end > start){
-            int middle = (int)((end+start)/2);
+        if(array.size() <= 1) {
+            return array;
+        }else {
 
-            mergesort(array, start, middle);
-            mergesort(array, middle + 1, end);
+            def center = array.size()/2;
+            def left = array[0..center-1];
+            def right = array[center..array.size()-1]
 
-            mergeArrays(array, start, middle, end);
-
-            println(array);
+            return merge(sort(left), sort(right));
         }
     }
 
-    def mergeArrays(array, start, middle, end){
+    def merge(left, right){
 
-        def left_part = Arrays.copyOfRange(array, start, middle + 1 );
-        def right_part = Arrays.copyOfRange(array, middle + 1, end + 1);
+        def merged = [];
 
-        int current_index = start, index_of_left = 0 , index_of_right = 0;
+        while(left.size() > 0 && right.size() > 0){
+            if(left.get(0) <= right.get(0)){
+                merged << left.remove(0);
+            }else {
+                merged << right.remove(0);
+            }
+        }
 
-        while (index_of_left < left_part.length && index_of_right < right_part.length)
-            array[current_index++] = (left_part[index_of_left] <= right_part[index_of_right]) ? left_part[index_of_left++] : right_part[index_of_right++];
-
-        while (index_of_left < left_part.length)
-            array[current_index++] = left_part[index_of_left++];
-
-        while (index_of_right < right_part.length)
-            array[current_index++] = right_part[index_of_right++];
+        merged = merged + left + right;
+        return merged;
     }
 }
