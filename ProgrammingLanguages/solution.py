@@ -1,28 +1,15 @@
-import csv
 import sys
 import itertools
 
-class Restaurant:
-
-	restaurantId = 0
-	menu = []	#list of Item objects
-
-	def __init__(self, restaurantId, menu):
-		self.restaurantId = restaurantId
-		self.menu = menu
-
-
-class Item:
-	label = []
-	price = 0.0
-
-	def __init__(self, label, price):
-		self.label = label
-		self.price = price
-
-
+from Restaurant import Restaurant
+from Item import Item
+from CSVParse import csvParser
 
 def main():
+
+	if len(sys.argv) < 3:
+		print "Invalid input !"
+		exit(0)
 
 	myMenu = [x.strip() for x in sys.argv[2:]]
 	restaurantDict = csvParser(sys.argv[1])
@@ -34,30 +21,6 @@ def main():
 
 	bestRestaurant, minPrice = findPerfectRestaurant(suitableRestaurants, myMenu)
 	print bestRestaurant, minPrice
-
-
-def csvParser(filename):
-
-	restaurantDict = {}
-
-	with open(filename) as csvfile:
-		csvreader = csv.reader(csvfile)
-
-		for row in csvreader:
-			restaurantId = int(row[0])
-			price = float(row[1])
-			label = [x.strip() for x in row[2:]]
-
-			try:
-				restaurant = restaurantDict[restaurantId]
-			except:
-				restaurant = Restaurant(restaurantId, [])
-				restaurantDict[restaurantId] = restaurant
-
-			item = Item(label, price)
-			restaurant.menu.append(item)
-
-	return restaurantDict
 
 
 
