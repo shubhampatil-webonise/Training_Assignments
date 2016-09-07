@@ -15,12 +15,31 @@ public class LoginHandler {
 
         String choice = in.next();
 
+        DbConnector connector = new MySQLConnector();
 
-        //to avoid if-else statements, get all available loginMethods and call login for each loginMethod
-        ArrayList<LoginInterface> loginMethods = new LoginMethods().supplyLoginMethods(choice);
+        //Liskov's Substitution Principle (L - SOLID)
+        LoginMethod loginMethod;
 
-        for(LoginInterface method : loginMethods){
-            method.login();
+        switch (choice){
+            case "Facebook" :   loginMethod = new FacebookLogin(connector);
+                                loginMethod.login();
+                                break;
+
+            case "Twitter" :    loginMethod = new TwitterLogin(connector);
+                                loginMethod.login();
+                                break;
+
+            case "LinkedIn" :   loginMethod = new LinkedinLogin(connector);
+                                loginMethod.login();
+                                break;
+
+            case "Proprietor" : loginMethod = new ProprietorLogin(connector);
+                                loginMethod.login();
+                                break;
+
+            default :   System.out.println("Wrong Input !");
+                        break;
         }
+
     }
 }

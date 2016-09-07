@@ -10,6 +10,8 @@ public class MobileHandler {
 
         StateHandler stateOfMobile = new StateHandler();
 
+        Functionality functionality;
+
         while(true){
             System.out.println("Select a function:" +
                     "\n1. Unlock Phone" +
@@ -24,9 +26,38 @@ public class MobileHandler {
 
             int choice = in.nextInt();
 
-            ArrayList<Functionality> functionalities = new GetFunctionalities().supplyFunctionalities();
+            switch (choice){
+                case 1 :    functionality = new Unlock();
+                            stateOfMobile = functionality.runFunctionality(stateOfMobile);
+                            break;
 
-            stateOfMobile = functionalities.get(choice - 1).runFunctionality(stateOfMobile);
+                case 2 :    functionality = new Lock();
+                            stateOfMobile = functionality.runFunctionality(stateOfMobile);
+                            break;
+
+                case 3 :    functionality = new StartCall();
+                            stateOfMobile = functionality.runFunctionality(stateOfMobile);
+                            break;
+
+                case 4 :    functionality = new EndCall();
+                            stateOfMobile = functionality.runFunctionality(stateOfMobile);
+                            break;
+
+                case 5 :    functionality = new SendMessage();
+                            stateOfMobile = functionality.runFunctionality(stateOfMobile);
+                            break;
+
+                case 6 :    functionality = new Camera();
+                            stateOfMobile = functionality.runFunctionality(stateOfMobile);
+                            break;
+
+                case 7 :    functionality = new Internet();
+                            stateOfMobile = functionality.runFunctionality(stateOfMobile);
+                            break;
+
+                default:    System.out.println("Wrong input !\n");
+                            break;
+            }
         }
 
     }

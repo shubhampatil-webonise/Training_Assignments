@@ -10,13 +10,12 @@ public class RemoteHandler {
         System.out.println("Hey ! This is a TV");
 
         StateHandler newTVState = new TVState();
+        Functionality functionality;
 
         System.out.println("Max Volume :" + Integer.toString(newTVState.maxVolumeLimit));
         System.out.println("Max Channels :" + Integer.toString(newTVState.maxChannelLimit));
 
         System.out.println("Use this remote to operate it.");
-
-        ArrayList<Functionality> functionalities = new Functionalities().allFunctionalities();
 
         Scanner in = new Scanner(System.in);
 
@@ -31,7 +30,34 @@ public class RemoteHandler {
 
             int choice = in.nextInt();
 
-            newTVState = functionalities.get(choice - 1).runFunctionality(newTVState);
+            switch (choice) {
+                case 1 :    functionality = new Switch();
+                            newTVState = functionality.runFunctionality(newTVState);
+                            break;
+
+                case 2 :    functionality = new ChannelUp();
+                            newTVState = functionality.runFunctionality(newTVState);
+                            break;
+
+                case 3 :    functionality = new ChannelDown();
+                            newTVState = functionality.runFunctionality(newTVState);
+                            break;
+
+                case 4 :    functionality = new VolumeUp();
+                            newTVState = functionality.runFunctionality(newTVState);
+                            break;
+
+                case 5 :    functionality = new VolumeDown();
+                            newTVState = functionality.runFunctionality(newTVState);
+                            break;
+
+                case 6 :    functionality = new SwitchChannel();
+                            newTVState = functionality.runFunctionality(newTVState);
+                            break;
+
+                default:    System.out.println("Wrong choice !\n");
+                            break;
+            }
 
         }
     }
